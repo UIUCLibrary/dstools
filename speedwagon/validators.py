@@ -71,13 +71,14 @@ class OptionValidator(OptionValidatorFactory):
         return self.create(key)
 
 
-class OptionValidation:
+class OptionValidation(abc.ABC):
 
+    @abc.abstractmethod
     def get_issues(
             self,
             workflow: speedwagon.Workflow,
             key: str,
-            value
+            value: Any
     ) -> Iterable[str]:
         return []
 
@@ -121,11 +122,10 @@ class OptionValidateDirectory(OptionValidation):
     ) -> Iterable[str]:
 
         if key not in self.keys:
-            return []
+            return
         if value is None:
-            return [
-                f"{key} is empty"
-            ]
+            yield f"{key} is empty"
+            return
         if os.path.exists(value) is False:
             yield f'"Directory "{value}" does not exist"'
 
@@ -144,8 +144,8 @@ class OptionValidator2:
     ) -> Iterable[str]:
 
         issues: List[str] = []
-        for v in self.validators:
-            issues += v.get_issues(
+        for validator in self.validators:
+            issues += validator.get_issues(
                 workflow=self.workflow,
                 key=key,
                 value=value
