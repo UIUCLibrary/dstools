@@ -94,7 +94,10 @@ class OptionValidationValidKey(OptionValidation):
             key: str,
             value: Union[str, bool, None]
     ) -> Iterable[str]:
-        valid_keys: Iterable[str] = self.keys or [o.label_text for o in workflow.user_options()]
+        valid_keys: Iterable[str] = \
+            self.keys or \
+            [o.label_text for o in workflow.user_options()]
+
         if key not in valid_keys:
             yield f'[{key}] is not a valid option'
 
@@ -134,8 +137,17 @@ class OptionValidator2:
         self.workflow = workflow
         self.validators: List[OptionValidation] = []
 
-    def find_user_option_errors(self, key: str, value: Union[str, bool, None]) -> Iterable[str]:
+    def find_user_option_errors(
+            self,
+            key: str,
+            value: Union[str, bool, None]
+    ) -> Iterable[str]:
+
         issues: List[str] = []
         for v in self.validators:
-            issues += v.get_issues(workflow=self.workflow, key=key, value=value)
+            issues += v.get_issues(
+                workflow=self.workflow,
+                key=key,
+                value=value
+            )
         return list(set(issues))
