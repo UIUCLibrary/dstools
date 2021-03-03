@@ -541,9 +541,11 @@ pipeline {
                                         stage('Run PyTest Unit Tests'){
                                             steps{
                                                 catchError(buildResult: 'UNSTABLE', message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
-                                                    sh(
-                                                        script: 'coverage run --parallel-mode --source=speedwagon -m pytest --junitxml=./reports/tests/pytest/pytest-junit.xml'
-                                                    )
+                                                    withEnv(['QT_QPA_PLATFORM=offscreen']) {
+                                                        sh(
+                                                            script: 'coverage run --parallel-mode --source=speedwagon -m pytest --junitxml=./reports/tests/pytest/pytest-junit.xml'
+                                                        )
+                                                    }
                                                 }
                                             }
                                             post {
